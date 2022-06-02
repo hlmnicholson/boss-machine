@@ -18,9 +18,8 @@ minionsRouter.get('/', (req, res, next) => {
 
 // GET minion by id
 minionsRouter.get('/:minionId', (req, res, next) => {
-  const id = req.params.id;
+  const id = req.params.minionId;
   const minion = getFromDatabaseById('minions', id);
-
   if (minion) {
     res.status(200).send(minion);
   } else {
@@ -29,12 +28,19 @@ minionsRouter.get('/:minionId', (req, res, next) => {
 })
 
 // POST new minion
+minionsRouter.post('/', (req, res, next) => {
+  const newMinion = addToDatabase('minions', req.body);
+  if (newMinion) {
+    res.status(200).send(newMinion);
+  } else {
+    res.status(404).send();
+  }
+})
 
 // PUT existing minion
 minionsRouter.put('/:minionId', (req, res, next) => {
   const id = req.params.minionId;
   const minion = getFromDatabaseById('minions', id);
-  // {id: id, ...req.body}
 
   if (minion) {
     const updatedMinion = {
@@ -50,8 +56,14 @@ minionsRouter.put('/:minionId', (req, res, next) => {
 
 // DELETE existing minion
 minionsRouter.delete('/:minionId', (req, res, next) => {
-  const id = req.params.id;
+  const id = req.params.minionId;
   deleteFromDatabasebyId('minions', id) 
+  res.status(204).send();
+})
+
+// DELETE all minions
+minionsRouter.delete('/', (req, res, next) => {
+  deleteAllFromDatabase('minions') 
   res.status(204).send();
 })
 
