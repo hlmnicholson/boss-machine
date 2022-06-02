@@ -4,11 +4,22 @@ const {  getAllFromDatabase,
   getFromDatabaseById,
   addToDatabase,
   updateInstanceInDatabase,
-  deleteFromDatabasebyId,
-  deleteAllFromDatabase, } = require('../db')
+  deleteFromDatabasebyId } = require('../db')
 
 // Middleware for id?
 // minionsRouter.use('/:id', func)
+minionsRouter.param('minionId', (req, res, next, minionId) => {
+  // const idToFind = Number(minionId);
+  const minion = getFromDatabaseById('minions', minionId);
+  if (minion) {
+    req.minionId = minionId;
+    req.minion = minion;
+    next();
+  } else {
+    res.status(404).send('Minion not found.')
+  }
+})
+
   
 // GET all minions
 minionsRouter.get('/', (req, res, next) => {
@@ -18,20 +29,15 @@ minionsRouter.get('/', (req, res, next) => {
 
 // GET minion by id
 minionsRouter.get('/:minionId', (req, res, next) => {
-  const id = req.params.minionId;
-  const minion = getFromDatabaseById('minions', id);
-  if (minion) {
-    res.status(200).send(minion);
-  } else {
-    res.status(404).send();
-  }
+  res.status(200).send(req.minion);
+
 })
 
 // POST new minion
 minionsRouter.post('/', (req, res, next) => {
   const newMinion = addToDatabase('minions', req.body);
   if (newMinion) {
-    res.status(200).send(newMinion);
+    res.status(201).send(newMinion);
   } else {
     res.status(404).send();
   }
@@ -39,31 +45,17 @@ minionsRouter.post('/', (req, res, next) => {
 
 // PUT existing minion
 minionsRouter.put('/:minionId', (req, res, next) => {
-  const id = req.params.minionId;
-  const minion = getFromDatabaseById('minions', id);
-
-  if (minion) {
-    const updatedMinion = {
-      ...minion,
+  const updatedMinion = {
+      ...req.minion,
       ...req.body
     } 
-    const response = updateInstanceInDatabase('minions', updatedMinion)
+  const response = updateInstanceInDatabase('minions', updatedMinion)
     res.status(200).send(response);
-  } else {
-    res.status(404).send();
-  }
 })
 
 // DELETE existing minion
 minionsRouter.delete('/:minionId', (req, res, next) => {
-  const id = req.params.minionId;
-  deleteFromDatabasebyId('minions', id) 
-  res.status(204).send();
-})
-
-// DELETE all minions
-minionsRouter.delete('/', (req, res, next) => {
-  deleteAllFromDatabase('minions') 
+  deleteFromDatabasebyId('minions', req.minionId) 
   res.status(204).send();
 })
 
