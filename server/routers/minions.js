@@ -1,4 +1,5 @@
 const express = require('express');
+const { min } = require('mocha/lib/reporters');
 const minionsRouter = express.Router({mergeParams: true});
 const {  getAllFromDatabase,
   getFromDatabaseById,
@@ -16,7 +17,7 @@ minionsRouter.param('minionId', (req, res, next, minionId) => {
     req.minion = minion;
     next();
   } else {
-    res.status(404).send('Minion not found.')
+    next(new Error("Minion id does not exist"));
   }
 })
 
@@ -39,7 +40,7 @@ minionsRouter.post('/', (req, res, next) => {
   if (newMinion) {
     res.status(201).send(newMinion);
   } else {
-    res.status(404).send();
+    next(new Error());
   }
 })
 
@@ -58,5 +59,12 @@ minionsRouter.delete('/:minionId', (req, res, next) => {
   deleteFromDatabasebyId('minions', req.minionId) 
   res.status(204).send();
 })
+
+
+// Error handling middleware
+minionsRouter.use((err, req, res, next) => {
+  const status = err.status || 500;
+  res.status(status).send(err.message);
+});
 
 module.exports = minionsRouter;
