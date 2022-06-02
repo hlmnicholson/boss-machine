@@ -42,7 +42,6 @@ minionsRouter.put('/:minionId', (req, res, next) => {
       ...req.body
     } 
     const response = updateInstanceInDatabase('minions', updatedMinion)
-    
     res.status(200).send(response);
   } else {
     res.status(404).send();
@@ -52,14 +51,8 @@ minionsRouter.put('/:minionId', (req, res, next) => {
 // DELETE existing minion
 minionsRouter.delete('/:minionId', (req, res, next) => {
   const id = req.params.id;
-  const minion = getFromDatabaseById('minions', id);
-
-  if (minion) {
-    deleteFromDatabasebyId('minions', id) 
-    res.status(204).send();
-  } else {
-    res.status(404).send();
-  }
+  deleteFromDatabasebyId('minions', id) 
+  res.status(204).send();
 })
 
 module.exports = minionsRouter;
