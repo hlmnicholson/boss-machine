@@ -1,5 +1,4 @@
 const express = require('express');
-const { min } = require('mocha/lib/reporters');
 const minionsRouter = express.Router({mergeParams: true});
 const {  getAllFromDatabase,
   getFromDatabaseById,
@@ -7,13 +6,12 @@ const {  getAllFromDatabase,
   updateInstanceInDatabase,
   deleteFromDatabasebyId } = require('../db')
 
-// Middleware for id?
-// minionsRouter.use('/:id', func)
+// Middleware for id
 minionsRouter.param('minionId', (req, res, next, minionId) => {
-  // const idToFind = Number(minionId);
   const minion = getFromDatabaseById('minions', minionId);
   if (minion) {
-    req.minionId = minionId;
+    // CHECK BELOW LINE
+    // req.minionId = minionId;
     req.minion = minion;
     next();
   } else {
@@ -24,14 +22,7 @@ minionsRouter.param('minionId', (req, res, next, minionId) => {
   
 // GET all minions
 minionsRouter.get('/', (req, res, next) => {
-  const minions = getAllFromDatabase('minions');
-  res.send(minions);
-})
-
-// GET minion by id
-minionsRouter.get('/:minionId', (req, res, next) => {
-  res.status(200).send(req.minion);
-
+  res.send(getAllFromDatabase('minions'));
 })
 
 // POST new minion
@@ -42,6 +33,12 @@ minionsRouter.post('/', (req, res, next) => {
   } else {
     next(new Error());
   }
+})
+
+// GET minion by id
+minionsRouter.get('/:minionId', (req, res, next) => {
+  res.status(200).send(req.minion);
+
 })
 
 // PUT existing minion
@@ -56,7 +53,7 @@ minionsRouter.put('/:minionId', (req, res, next) => {
 
 // DELETE existing minion
 minionsRouter.delete('/:minionId', (req, res, next) => {
-  deleteFromDatabasebyId('minions', req.minionId) 
+  deleteFromDatabasebyId('minions', req.minion.id) 
   res.status(204).send();
 })
 
