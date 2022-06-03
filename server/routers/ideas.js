@@ -1,7 +1,7 @@
 const express = require('express');
 const ideasRouter = express.Router({mergeParams: true});
-
-const {  getAllFromDatabase,
+const {  
+  getAllFromDatabase,
   getFromDatabaseById,
   addToDatabase,
   updateInstanceInDatabase,

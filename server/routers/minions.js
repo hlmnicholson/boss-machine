@@ -1,6 +1,7 @@
 const express = require('express');
 const minionsRouter = express.Router({mergeParams: true});
-const {  getAllFromDatabase,
+const {  
+  getAllFromDatabase,
   getFromDatabaseById,
   addToDatabase,
   updateInstanceInDatabase,
@@ -20,12 +21,12 @@ minionsRouter.param('minionId', (req, res, next, minionId) => {
 })
 
   
-// GET all minions
+// GET /api/minions to get an array of all minions.
 minionsRouter.get('/', (req, res, next) => {
   res.send(getAllFromDatabase('minions'));
 })
 
-// POST new minion
+// POST /api/minions to create a new minion and save it to the database.
 minionsRouter.post('/', (req, res, next) => {
   const newMinion = addToDatabase('minions', req.body);
   if (newMinion) {
@@ -35,13 +36,13 @@ minionsRouter.post('/', (req, res, next) => {
   }
 })
 
-// GET minion by id
+// GET /api/minions/:minionId to get a single minion by id.
 minionsRouter.get('/:minionId', (req, res, next) => {
   res.status(200).send(req.minion);
 
 })
 
-// PUT existing minion
+// PUT /api/minions/:minionId to update a single minion by id.
 minionsRouter.put('/:minionId', (req, res, next) => {
   const updatedMinion = {
       ...req.minion,
@@ -51,12 +52,11 @@ minionsRouter.put('/:minionId', (req, res, next) => {
     res.status(200).send(response);
 })
 
-// DELETE existing minion
+// DELETE /api/minions/:minionId to delete a single minion by id.
 minionsRouter.delete('/:minionId', (req, res, next) => {
   deleteFromDatabasebyId('minions', req.minion.id) 
   res.status(204).send();
 })
-
 
 // Error handling middleware
 minionsRouter.use((err, req, res, next) => {
