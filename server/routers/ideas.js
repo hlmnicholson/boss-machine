@@ -9,13 +9,13 @@ const {
 const checkMillionDollarIdea = require('../checkMillionDollarIdea');
 
 // Middleware for id
-ideasRouter.param('ideaId', (req, res, next, ideaId) => {
+ideasRouter.param('id', (req, res, next, ideaId) => {
   const idea = getFromDatabaseById('ideas', ideaId);
   if (idea) {
     req.idea = idea;
     next();
   } else {
-    next(new Error("Idea id does not exist"));
+    res.status(404).send();
   }
 })
 
@@ -25,47 +25,32 @@ ideasRouter.get('/', (req, res, next) => {
 })
 
 // POST /api/ideas to create a new idea and save it to the database.
-ideasRouter.post('/', (req, res, next) => {
+ideasRouter.post('/', checkMillionDollarIdea, (req, res, next) => {
   const newIdea = addToDatabase('ideas', req.body);
-  const checkIdea = checkMillionDollarIdea(newIdea.numWeeks, newIdea.weeklyRevenue)
-  if (newIdea && checkIdea) {
-    res.status(201).send(newIdea);
-  } else {
-    next(new Error('Invalid new idea!'));
-  }
+  res.status(201).send(newIdea);
 })
 
 // GET /api/ideas/:ideaId to get a single idea by id.
-ideasRouter.get('/:ideaId', (req, res, next) => {
-  res.status(200).send(req.idea);
+ideasRouter.get('/:id', (req, res, next) => {
+  res.send(req.idea);
 
 })
 
 // PUT /api/ideas/:ideaId to update a single idea by id.
-ideasRouter.put('/:ideaId', (req, res, next) => {
-  const updatedIdea = {
-      ...req.idea,
-      ...req.body
-    } 
-  const checkIdea = checkMillionDollarIdea(updatedIdea.numWeeks, updatedIdea.weeklyRevenue);
+ideasRouter.put('/:id', checkMillionDollarIdea, (req, res, next) => {
+  const response = updateInstanceInDatabase('ideas', req.body)
+  res.send(response);
+})
 
-  if(checkIdea) {
-    const response = updateInstanceInDatabase('ideas', updatedIdea)
-      res.status(200).send(response);
+// DELETE /api/ideas/:id to delete a single idea by id.
+ideasRouter.delete('/:id', (req, res, next) => {
+  const deleted = deleteFromDatabasebyId('ideas', req.params.id) 
+  if (deleted) {
+    res.status(204);  
   } else {
-    next(new Error('Make it more profitable!'));
+    res.status(404);
   }
+  res.send();
 })
-
-// DELETE /api/ideas/:ideaId to delete a single idea by id.
-ideasRouter.delete('/:ideaId', (req, res, next) => {
-  deleteFromDatabasebyId('ideas', req.idea.id) 
-  res.status(204).send();
-})
-
-ideasRouter.use((err, req, res, next) => {
-  const status = err.status || 500;
-  res.status(status).send(err.message);
-});
 
 module.exports = ideasRouter;
