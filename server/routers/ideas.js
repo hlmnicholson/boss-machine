@@ -5,7 +5,8 @@ const {
   getFromDatabaseById,
   addToDatabase,
   updateInstanceInDatabase,
-  deleteFromDatabasebyId } = require('../db')
+  deleteFromDatabasebyId } = require('../db');
+const checkMillionDollarIdea = require('../checkMillionDollarIdea');
 
 // Middleware for id
 ideasRouter.param('ideaId', (req, res, next, ideaId) => {
@@ -26,10 +27,11 @@ ideasRouter.get('/', (req, res, next) => {
 // POST /api/ideas to create a new idea and save it to the database.
 ideasRouter.post('/', (req, res, next) => {
   const newIdea = addToDatabase('ideas', req.body);
-  if (newIdea) {
+  const checkIdea = checkMillionDollarIdea(newIdea.numWeeks, newIdea.weeklyRevenue)
+  if (newIdea && checkIdea) {
     res.status(201).send(newIdea);
   } else {
-    next(new Error());
+    next(new Error('Invalid new idea!'));
   }
 })
 
@@ -45,8 +47,14 @@ ideasRouter.put('/:ideaId', (req, res, next) => {
       ...req.idea,
       ...req.body
     } 
-  const response = updateInstanceInDatabase('ideas', updatedIdea)
-    res.status(200).send(response);
+  const checkIdea = checkMillionDollarIdea(updatedIdea.numWeeks, updatedIdea.weeklyRevenue);
+
+  if(checkIdea) {
+    const response = updateInstanceInDatabase('ideas', updatedIdea)
+      res.status(200).send(response);
+  } else {
+    next(new Error('Make it more profitable!'));
+  }
 })
 
 // DELETE /api/ideas/:ideaId to delete a single idea by id.
