@@ -8,6 +8,7 @@ const {
   deleteFromDatabasebyId } = require('../db');
 const checkMillionDollarIdea = require('../checkMillionDollarIdea');
 
+
 // Middleware for id
 ideasRouter.param('id', (req, res, next, ideaId) => {
   const idea = getFromDatabaseById('ideas', ideaId);

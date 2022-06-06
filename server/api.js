@@ -4,10 +4,8 @@ const minionsRouter = require('./routers/minions');
 const ideasRouter = require('./routers/ideas');
 const meetingsRouter = require('./routers/meetings');
 
-
 // Minions
 apiRouter.use('/minions', minionsRouter);
-// apiRouter.get('/', minionsRouter)
 
 // Ideas
 apiRouter.use('/ideas', ideasRouter);
