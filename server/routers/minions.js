@@ -53,7 +53,7 @@ minionsRouter.put('/:minionId', (req, res, next) => {
 
 // DELETE /api/minions/:id to delete a single minion by id.
 minionsRouter.delete('/:minionId', (req, res, next) => {
-  const deleted = deleteFromDatabasebyId('minions', req.params.id);
+  const deleted = deleteFromDatabasebyId('minions', req.params.minionId);
   if (deleted) {
     res.status(204);  
   } else {
@@ -107,5 +107,18 @@ minionsRouter.put('/:minionId/work/:workId', (req, res, next) => {
 })
 
 // DELETE /api/minions/:id/work/:workId to delete a single work by id.
-
+minionsRouter.delete('/:minionId/work/:workId', (req, res, next) => {
+  if(req.minion.id !== req.work.minionId) {
+    res.status(400).send();
+    next();
+  } else {
+    const deleted = deleteFromDatabasebyId('work', req.params.workId);
+    if (deleted) {
+      res.status(204);  
+    } else {
+      res.status(404);
+    }
+    res.send();
+  }
+})
 module.exports = minionsRouter;
