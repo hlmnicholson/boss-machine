@@ -1,7 +1,7 @@
-import axios from 'axios';
+const axios = require('axios');
 
-import { hashHistory } from 'react-router'
-import { setSelectedMinion } from './selectedMinion';
+const { hashHistory } = require('react-router')
+const { setSelectedMinion } = require ('./selectedMinion');
 
 const SET_MINIONS = 'SET_MINIONS';
 const CREATE_MINION = 'CREATE_MINION';
@@ -9,21 +9,21 @@ const UPDATE_MINION = 'UPDATE_MINION';
 
 // Actions
 
-export const setMinions = minions => {
+const setMinions = minions => {
   return {
     type: SET_MINIONS,
     minions,
   }
 }
 
-export const addMinion = minion => {
+const addMinion = minion => {
   return {
     type: CREATE_MINION,
     minion,
   }
 }
 
-export const updateMinion = minion => {
+const updateMinion = minion => {
   return {
     type: UPDATE_MINION,
     minion,
@@ -32,7 +32,7 @@ export const updateMinion = minion => {
 
 // Thunks
 
-export const createMinionThunk = minion => dispatch => {
+const createMinionThunk = minion => dispatch => {
   axios.post('http://localhost:4001/api/minions', minion)
   .then(res => res.data)
   .then(createdMinion => {
@@ -42,7 +42,7 @@ export const createMinionThunk = minion => dispatch => {
   .catch(console.error.bind(console));
 }
 
-export const updateMinionThunk = minion => dispatch => {
+const updateMinionThunk = minion => dispatch => {
   axios.put(`http://localhost:4001/api/minions/${minion.id}`, minion)
   .then(res => res.data)
   .then(updatedMinion => {
@@ -52,7 +52,7 @@ export const updateMinionThunk = minion => dispatch => {
   .catch(console.error.bind(console));
 }
 
-export const deleteMinionThunk = minionId => dispatch => {
+const deleteMinionThunk = minionId => dispatch => {
   axios.delete(`http://localhost:4001/api/minions/${minionId}`)
   .then(res => res.data)
   .then(() => {
@@ -67,9 +67,9 @@ export const deleteMinionThunk = minionId => dispatch => {
 
 // Reducer
 
-export const initial = [];
+ const initial = [];
 
-export default (initialState = initial, action) => {
+module.exports = (initialState = initial, action) => {
   switch(action.type) {
     case CREATE_MINION:
       return [...initialState, action.minion];
@@ -85,3 +85,14 @@ export default (initialState = initial, action) => {
       return initialState;
   }
 }
+
+module.exports = {
+  setMinions,
+  addMinion,
+  updateMinion,
+  createMinionThunk,
+  updateMinionThunk,
+  deleteMinionThunk,
+  initial
+
+};

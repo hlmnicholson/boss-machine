@@ -215,6 +215,7 @@ const addToDatabase = (modelType, instance) => {
   if (model === null) {
     return null;
   }
+
   if (model.isValid(instance)) {
     instance.id = `${model.nextId++}`;
     model.data.push(instance);
