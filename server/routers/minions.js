@@ -7,7 +7,7 @@ const {
   updateInstanceInDatabase,
   deleteFromDatabasebyId } = require('../db');
 
-// Middleware for id
+// Middleware for minionId
 minionsRouter.param('minionId', (req, res, next, minionId) => {
   const minion = getFromDatabaseById('minions', minionId);
   if (minion) {
@@ -18,6 +18,7 @@ minionsRouter.param('minionId', (req, res, next, minionId) => {
   }
 });
 
+// Middleware for workId
 minionsRouter.param('workId', (req, res, next, workId) => {
   let work = getFromDatabaseById('work', workId);
   if (work) {
@@ -65,8 +66,6 @@ minionsRouter.delete('/:minionId', (req, res, next) => {
 
 // GET /api/minions/:id/work to get an array of all work for the specified minon.
 minionsRouter.get('/:minionId/work', (req, res, next) => {
-  // res.send([getFromDatabaseById('work', minionId)]);
-  // const minionWork = getAllFromDatabase('work').filter(e => e.minionId === minionId);
   const minionWork = getAllFromDatabase('work').filter(e => e.minionId === req.params.minionId)
   if(minionWork) {
     res.send(minionWork);
